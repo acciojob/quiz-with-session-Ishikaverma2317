@@ -1,47 +1,40 @@
+// --- Restore progress from session storage ---
+let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
 
-
-// Load saved progress (if any)
-let savedProgress = JSON.parse(sessionStorage.getItem("progress")) || {};
-
-// References
+// DOM elements
 const questionsElement = document.getElementById("questions");
+const scoreElement = document.getElementById("score");
 const submitBtn = document.getElementById("submit");
-const scoreDiv = document.getElementById("score");
 
-// Render quiz with restored selections
+// Display the quiz questions and choices
 function renderQuestions() {
-  questionsElement.innerHTML = "";
+  questionsElement.innerHTML = ""; // clear before rendering again
 
   for (let i = 0; i < questions.length; i++) {
-    const questionObj = questions[i];
+    const q = questions[i];
 
     const questionDiv = document.createElement("div");
+    questionDiv.textContent = q.question;
 
-    const qText = document.createElement("p");
-    qText.textContent = questionObj.question;
-    questionDiv.appendChild(qText);
-
-    // Create answer options
-    questionObj.choices.forEach((choice) => {
+    q.choices.forEach(choice => {
       const input = document.createElement("input");
       input.type = "radio";
       input.name = `question-${i}`;
       input.value = choice;
 
-      // Restore checked value
-      if (savedProgress[i] === choice) input.checked = true;
+      // restore selection
+      if (userAnswers[i] === choice) {
+        input.checked = true;
+      }
 
-      // Save progress to session storage whenever user selects an option
+      // save to sessionStorage when user selects
       input.addEventListener("change", () => {
-        savedProgress[i] = input.value;
-        sessionStorage.setItem("progress", JSON.stringify(savedProgress));
+        userAnswers[i] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(userAnswers));
       });
 
-      const label = document.createElement("label");
-      label.textContent = choice;
-
       questionDiv.appendChild(input);
-      questionDiv.appendChild(label);
+      questionDiv.appendChild(document.createTextNode(choice));
     });
 
     questionsElement.appendChild(questionDiv);
@@ -54,18 +47,14 @@ renderQuestions();
 submitBtn.addEventListener("click", () => {
   let score = 0;
 
-  // Count correct answers
   for (let i = 0; i < questions.length; i++) {
-    if (savedProgress[i] === questions[i].answer) {
+    if (userAnswers[i] === questions[i].answer) {
       score++;
     }
   }
 
-  // Display score
-  scoreDiv.textContent = `Your score is ${score} out of 5.`;
+  scoreElement.textContent = `Your score is ${score} out of 5.`;
 
-  // Save score in localStorage
+  // save score to localStorage
   localStorage.setItem("score", score);
 });
-
-
