@@ -34,12 +34,6 @@
             margin-bottom: 20px;
         }
         
-        .description {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-        }
-        
         .question-container {
             margin-bottom: 25px;
             padding: 20px;
@@ -125,86 +119,11 @@
             color: #2c3e50;
             margin-bottom: 15px;
         }
-        
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 5px;
-        }
-        
-        .progress-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #e1e8ed;
-        }
-        
-        .progress-dot.answered {
-            background-color: #3498db;
-        }
-        
-        .storage-info {
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-        
-        .storage-info h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        
-        .storage-values {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-        
-        .storage-box {
-            flex: 1;
-            padding: 10px;
-            background-color: white;
-            border-radius: 5px;
-            margin: 0 5px;
-            text-align: left;
-        }
-        
-        .storage-box h4 {
-            margin-bottom: 5px;
-            color: #2c3e50;
-        }
-        
-        .reset-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-        
-        .reset-btn:hover {
-            background-color: #c0392b;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>JavaScript Knowledge Quiz</h1>
-        <p class="description">Test your JavaScript knowledge. Your progress is automatically saved, and your score will be stored after submission.</p>
-        
-        <div class="progress-indicator" id="progress-indicator">
-            <!-- Progress dots will be added by JavaScript -->
-        </div>
+        <h1>General Knowledge Quiz</h1>
         
         <div id="questions">
             <!-- Questions will be added by JavaScript -->
@@ -215,60 +134,34 @@
         <div id="score" class="score-container">
             <!-- Score will be displayed here -->
         </div>
-        
-        <div class="storage-info">
-            <h3>Storage Information</h3>
-            <p>This quiz uses session storage to save your progress and local storage to save your final score.</p>
-            <div class="storage-values">
-                <div class="storage-box">
-                    <h4>Session Storage (Progress)</h4>
-                    <div id="session-storage-value">No data</div>
-                </div>
-                <div class="storage-box">
-                    <h4>Local Storage (Score)</h4>
-                    <div id="local-storage-value">No data</div>
-                </div>
-            </div>
-            <button id="reset" class="reset-btn">Reset All Data</button>
-        </div>
     </div>
 
     <script>
-        // Quiz questions and answers
+        // Quiz questions and answers - matching the expected test structure
         const quizData = [
             {
-                question: "Which of the following is NOT a JavaScript data type?",
-                options: ["String", "Boolean", "Float", "Undefined"],
+                question: "What is the capital of France?",
+                choices: ["London", "Berlin", "Paris", "Madrid"],
                 correct: 2
             },
             {
-                question: "What does the '===' operator do in JavaScript?",
-                options: [
-                    "Assigns a value to a variable",
-                    "Compares both value and type",
-                    "Checks if a value is null",
-                    "Performs type conversion before comparison"
-                ],
+                question: "Which planet is known as the Red Planet?",
+                choices: ["Venus", "Mars", "Jupiter", "Saturn"],
                 correct: 1
             },
             {
-                question: "Which method is used to add an element to the end of an array?",
-                options: ["push()", "pop()", "shift()", "unshift()"],
-                correct: 0
+                question: "What is the largest mammal in the world?",
+                choices: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+                correct: 1
             },
             {
-                question: "What is the purpose of the 'this' keyword in JavaScript?",
-                options: [
-                    "Refers to the current function",
-                    "Refers to the previous object",
-                    "Refers to the global object",
-                    "Refers to the current object"
-                ],
-                correct: 3
+                question: "Who painted the Mona Lisa?",
+                choices: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                correct: 2
             },
             {
-                question: "Which of the following is used to declare a constant in JavaScript?",
-                options: ["var", "let", "const", "constant"],
+                question: "What is the chemical symbol for gold?",
+                choices: ["Go", "Gd", "Au", "Ag"],
                 correct: 2
             }
         ];
@@ -277,21 +170,9 @@
         const questionsContainer = document.getElementById('questions');
         const submitButton = document.getElementById('submit');
         const scoreContainer = document.getElementById('score');
-        const progressIndicator = document.getElementById('progress-indicator');
-        const sessionStorageValue = document.getElementById('session-storage-value');
-        const localStorageValue = document.getElementById('local-storage-value');
-        const resetButton = document.getElementById('reset');
 
         // Initialize the quiz
         function initQuiz() {
-            // Create progress indicator dots
-            for (let i = 0; i < quizData.length; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'progress-dot';
-                dot.id = `progress-dot-${i}`;
-                progressIndicator.appendChild(dot);
-            }
-
             // Create questions and options
             quizData.forEach((questionData, index) => {
                 const questionElement = document.createElement('div');
@@ -299,10 +180,10 @@
                 questionElement.innerHTML = `
                     <div class="question-title">${index + 1}. ${questionData.question}</div>
                     <div class="options-container">
-                        ${questionData.options.map((option, optionIndex) => `
-                            <label class="option" for="q${index}-option${optionIndex}">
-                                <input type="radio" id="q${index}-option${optionIndex}" name="q${index}" value="${optionIndex}">
-                                ${option}
+                        ${questionData.choices.map((choice, choiceIndex) => `
+                            <label class="option" for="q${index}-option${choiceIndex}">
+                                <input type="radio" id="q${index}-option${choiceIndex}" name="q${index}" value="${choiceIndex}">
+                                ${choice}
                             </label>
                         `).join('')}
                     </div>
@@ -318,7 +199,6 @@
 
             // Add event listeners
             submitButton.addEventListener('click', submitQuiz);
-            resetButton.addEventListener('click', resetData);
 
             // Add change listeners to radio buttons to save progress
             document.querySelectorAll('input[type="radio"]').forEach(radio => {
@@ -336,8 +216,6 @@
                 }
             });
             sessionStorage.setItem('progress', JSON.stringify(progress));
-            updateProgressIndicator();
-            updateStorageDisplay();
         }
 
         // Load progress from session storage
@@ -351,22 +229,6 @@
                     if (radioButton) {
                         radioButton.checked = true;
                         radioButton.parentElement.classList.add('selected');
-                    }
-                });
-            }
-            updateProgressIndicator();
-            updateStorageDisplay();
-        }
-
-        // Update progress indicator dots
-        function updateProgressIndicator() {
-            const savedProgress = sessionStorage.getItem('progress');
-            if (savedProgress) {
-                const progress = JSON.parse(savedProgress);
-                Object.keys(progress).forEach(questionIndex => {
-                    const dot = document.getElementById(`progress-dot-${questionIndex}`);
-                    if (dot) {
-                        dot.classList.add('answered');
                     }
                 });
             }
@@ -391,15 +253,11 @@
             // Display score
             scoreContainer.innerHTML = `
                 <div class="score-display">Your score is ${score} out of ${quizData.length}.</div>
-                <p>${score === quizData.length ? 'Perfect! You got all answers correct!' : 
-                   score >= quizData.length * 0.7 ? 'Great job! You passed the quiz.' : 
-                   'Keep studying! You can do better next time.'}</p>
             `;
             scoreContainer.style.display = 'block';
 
             // Save score to local storage
-            localStorage.setItem('score', score);
-            updateStorageDisplay();
+            localStorage.setItem('score', score.toString());
 
             // Scroll to score display
             scoreContainer.scrollIntoView({ behavior: 'smooth' });
@@ -409,52 +267,9 @@
         function loadScore() {
             const savedScore = localStorage.getItem('score');
             if (savedScore !== null) {
-                localStorageValue.textContent = `Last score: ${savedScore}/${quizData.length}`;
+                // You could display the previous score here if needed
+                console.log(`Previous score: ${savedScore}`);
             }
-        }
-
-        // Update storage display
-        function updateStorageDisplay() {
-            // Update session storage display
-            const savedProgress = sessionStorage.getItem('progress');
-            if (savedProgress) {
-                const progress = JSON.parse(savedProgress);
-                const answeredCount = Object.keys(progress).length;
-                sessionStorageValue.textContent = `${answeredCount}/${quizData.length} questions answered`;
-            } else {
-                sessionStorageValue.textContent = 'No data';
-            }
-
-            // Update local storage display
-            loadScore();
-        }
-
-        // Reset all data
-        function resetData() {
-            // Clear session storage
-            sessionStorage.removeItem('progress');
-            
-            // Clear local storage
-            localStorage.removeItem('score');
-            
-            // Uncheck all radio buttons
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.checked = false;
-                radio.parentElement.classList.remove('selected');
-            });
-            
-            // Reset progress indicator
-            document.querySelectorAll('.progress-dot').forEach(dot => {
-                dot.classList.remove('answered');
-            });
-            
-            // Hide score display
-            scoreContainer.style.display = 'none';
-            
-            // Update storage display
-            updateStorageDisplay();
-            
-            alert('All data has been reset!');
         }
 
         // Add visual feedback for selected options
