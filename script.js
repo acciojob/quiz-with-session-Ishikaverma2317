@@ -19,38 +19,40 @@ const questionsData = [
 const questionsContainer = document.getElementById("questions");
 const scoreDisplay = document.getElementById("score");
 
-// ✅ Load saved score from localStorage
+// ✅ Load saved score
 const savedScore = localStorage.getItem("score");
-if (savedScore) {
+if (savedScore !== null) {
   scoreDisplay.textContent = `Your score is ${savedScore} out of 5.`;
 }
 
-// ✅ Load saved progress from sessionStorage
-let progress = JSON.parse(sessionStorage.getItem("progress")) || {};
+// ✅ Load saved progress
+let progress = JSON.parse(sessionStorage.getItem("progress")) || Array(5).fill(null);
 
 // ✅ DISPLAY QUESTIONS
 questionsData.forEach((item, index) => {
   const div = document.createElement("div");
-  div.innerHTML = `
-    <p>${item.q}</p>
-    ${Object.keys(item.options)
-      .map(
-        key => `
+
+  let optionsHTML = "";
+  for (let key in item.options) {
+    optionsHTML += `
       <label>
         <input type="radio" name="q${index}" value="${key}"
         ${progress[index] === key ? "checked" : ""}>
         ${item.options[key]}
-      </label><br>`
-      )
-      .join("")}
-  `;
+      </label><br>
+    `;
+  }
+
+  div.innerHTML = `<p>${item.q}</p>${optionsHTML}`;
+
   questionsContainer.appendChild(div);
 });
 
-// ✅ Save progress when selecting an answer
+// ✅ Save progress
 document.querySelectorAll("input[type='radio']").forEach(input => {
   input.addEventListener("change", () => {
-    progress[input.name.replace("q", "")] = input.value;
+    const index = input.name.replace("q", "");
+    progress[index] = input.value;
     sessionStorage.setItem("progress", JSON.stringify(progress));
   });
 });
@@ -67,6 +69,5 @@ document.getElementById("submit").addEventListener("click", () => {
 
   scoreDisplay.textContent = `Your score is ${score} out of 5.`;
 
-  // ✅ Save score in localStorage
   localStorage.setItem("score", score);
 });
