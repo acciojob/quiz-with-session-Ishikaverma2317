@@ -3,24 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App</title>
+    <title>Quiz with Session & Local Storage</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
-        #questions > div { margin-bottom: 20px; }
-        #score { font-size: 24px; font-weight: bold; margin-top: 20px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .option:hover {
+            background-color: #e8f4fd;
+            border-color: #3498db;
+        }
+        
+        .option.selected {
+            background-color: #d6eaf8;
+            border-color: #3498db;
+        }
+        
+        .option input {
+            margin-right: 10px;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .score-container {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .score-display {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e1e8ed;
+        }
+        
+        .progress-dot.answered {
+            background-color: #3498db;
+        }
+        
+        .storage-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .storage-info h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .storage-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .storage-box {
+            flex: 1;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: left;
+        }
+        
+        .storage-box h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .reset-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>JavaScript Knowledge Quiz</h1>
+        <p class="description">Test your JavaScript knowledge. Your progress is automatically saved, and your score will be stored after submission.</p>
+        
+        <div class="progress-indicator" id="progress-indicator">
+            <!-- Progress dots will be added by JavaScript -->
+        </div>
+        
+        <div id="questions">
+            <!-- Questions will be added by JavaScript -->
+        </div>
+        
+        <button id="submit" class="submit-btn">Submit Quiz</button>
+        
+        <div id="score" class="score-container">
+            <!-- Score will be displayed here -->
+        </div>
+        
+        <div class="storage-info">
+            <h3>Storage Information</h3>
+            <p>This quiz uses session storage to save your progress and local storage to save your final score.</p>
+            <div class="storage-values">
+                <div class="storage-box">
+                    <h4>Session Storage (Progress)</h4>
+                    <div id="session-storage-value">No data</div>
+                </div>
+                <div class="storage-box">
+                    <h4>Local Storage (Score)</h4>
+                    <div id="local-storage-value">No data</div>
+                </div>
+            </div>
+            <button id="reset" class="reset-btn">Reset All Data</button>
+        </div>
+    </div>
 
-    <h1>Quiz</h1>
+    <script>
+        // Quiz questions and answers
+        const quizData = [
+            {
+                question: "Which of the following is NOT a JavaScript data type?",
+                options: ["String", "Boolean", "Float", "Undefined"],
+                correct: 2
+            },
+            {
+                question: "What does the '===' operator do in JavaScript?",
+                options: [
+                    "Assigns a value to a variable",
+                    "Compares both value and type",
+                    "Checks if a value is null",
+                    "Performs type conversion before comparison"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which method is used to add an element to the end of an array?",
+                options: ["push()", "pop()", "shift()", "unshift()"],
+                correct: 0
+            },
+            {
+                question: "What is the purpose of the 'this' keyword in JavaScript?",
+                options: [
+                    "Refers to the current function",
+                    "Refers to the previous object",
+                    "Refers to the global object",
+                    "Refers to the current object"
+                ],
+                correct: 3
+            },
+            {
+                question: "Which of the following is used to declare a constant in JavaScript?",
+                options: ["var", "let", "const", "constant"],
+                correct: 2
+            }
+        ];
 
-    <div id="questions"></div>
+        // DOM elements
+        const questionsContainer = document.getElementById('questions');
+        const submitButton = document.getElementById('submit');
+        const scoreContainer = document.getElementById('score');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const sessionStorageValue = document.getElementById('session-storage-value');
+        const localStorageValue = document.getElementById('local-storage-value');
+        const resetButton = document.getElementById('reset');
 
-    <button id="submit">Submit</button>
+        // Initialize the quiz
+        function initQuiz() {
+            // Create progress indicator dots
+            for (let i = 0; i < quizData.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.id = `progress-dot-${i}`;
+                progressIndicator.appendChild(dot);
+            }
 
-    <div id="score"></div>
+            // Create questions and options
+            quizData.forEach((questionData, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question-container';
+                questionElement.innerHTML = `
+                    <div class="question-title">${index + 1}. ${questionData.question}</div>
+                    <div class="options-container">
+                        ${questionData.options.map((option, optionIndex) => `
+                            <label class="option" for="q${index}-option${optionIndex}">
+                                <input type="radio" id="q${index}-option${optionIndex}" name="q${index}" value="${optionIndex}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionElement);
+            });
 
-    <script src="main.js"></script>
+            // Load saved progress from session storage
+            loadProgress();
 
+            // Load saved score from local storage
+            loadScore();
+
+            // Add event listeners
+            submitButton.addEventListener('click', submitQuiz);
+            resetButton.addEventListener('click', resetData);
+
+            // Add change listeners to radio buttons to save progress
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', saveProgress);
+            });
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            const progress = {};
+            quizData.forEach((_, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selectedOption) {
+                    progress[index] = parseInt(selectedOption.value);
+                }
+            });
+            sessionStorage.setItem('progress', JSON.stringify(progress));
+            updateProgressIndicator();
+            updateStorageDisplay();
+        }
+
+        // Load progress from session storage
+        function loadProgress() {
+            const savedProgress = sessionStorage.getItem('progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                Object.keys(progress).forEach(questionIndex => {
+                    const optionIndex = progress[questionIndex];
+                    const radioButton = document.querySelector(`input[name="q${questionIndex}"][value="${optionIndex}"]`);
+                    if (radioButton) {
+                        radioButton.checked = true;
+                        radioButton.parentElement.classList.add('selected');
+                    }
+                });
+            }
+            updateProgressIndicator();
+            updateStorageDisplay();
+        }
+
+        // Update progress indicator dots
+        function updateProgressIndicator() {
+            const savedProgress = sessionStorage.getItem('progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                Object.keys(progress).forEach(questionIndex => {
+                    const dot = document.getElementById(`progress-dot-${questionIndex}`);
+                    if (dot) {
+                        dot.classList.add('answered');
+                    }
+                });
+            }
+        }
+
+        // Submit the quiz and calculate score
+        function submitQuiz() {
+            let score = 0;
+            const userAnswers = {};
+
+            quizData.forEach((questionData, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selectedOption) {
+                    const answer = parseInt(selectedOption.value);
+                    userAnswers[index] = answer;
+                    if (answer === questionData.correct) {
+                        score++;
+                    }
+                }
+            });
+
+            // Display score
+            scoreContainer.innerHTML = `
+                <div class="score-display">Your score is ${score} out of ${quizData.length}.</div>
+                <p>${score === quizData.length ? 'Perfect! You got all answers correct!' : 
+                   score >= quizData.length * 0.7 ? 'Great job! You passed the quiz.' : 
+                   'Keep studying! You can do better next time.'}</p>
+            `;
+            scoreContainer.style.display = 'block';
+
+            // Save score to local storage
+            localStorage.setItem('score', score);
+            updateStorageDisplay();
+
+            // Scroll to score display
+            scoreContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Load score from local storage
+        function loadScore() {
+            const savedScore = localStorage.getItem('score');
+            if (savedScore !== null) {
+                localStorageValue.textContent = `Last score: ${savedScore}/${quizData.length}`;
+            }
+        }
+
+        // Update storage display
+        function updateStorageDisplay() {
+            // Update session storage display
+            const savedProgress = sessionStorage.getItem('progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const answeredCount = Object.keys(progress).length;
+                sessionStorageValue.textContent = `${answeredCount}/${quizData.length} questions answered`;
+            } else {
+                sessionStorageValue.textContent = 'No data';
+            }
+
+            // Update local storage display
+            loadScore();
+        }
+
+        // Reset all data
+        function resetData() {
+            // Clear session storage
+            sessionStorage.removeItem('progress');
+            
+            // Clear local storage
+            localStorage.removeItem('score');
+            
+            // Uncheck all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+                radio.parentElement.classList.remove('selected');
+            });
+            
+            // Reset progress indicator
+            document.querySelectorAll('.progress-dot').forEach(dot => {
+                dot.classList.remove('answered');
+            });
+            
+            // Hide score display
+            scoreContainer.style.display = 'none';
+            
+            // Update storage display
+            updateStorageDisplay();
+            
+            alert('All data has been reset!');
+        }
+
+        // Add visual feedback for selected options
+        document.addEventListener('click', function(e) {
+            if (e.target.type === 'radio') {
+                // Remove selected class from all options in the same question
+                const questionName = e.target.name;
+                document.querySelectorAll(`input[name="${questionName}"]`).forEach(radio => {
+                    radio.parentElement.classList.remove('selected');
+                });
+                
+                // Add selected class to the clicked option
+                e.target.parentElement.classList.add('selected');
+            }
+        });
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
 </body>
 </html>
