@@ -3,291 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz with Session & Local Storage</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        
-        .question-container {
-            margin-bottom: 25px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        .question-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        
-        .options-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        @media (max-width: 600px) {
-            .options-container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .option {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e1e8ed;
-        }
-        
-        .option:hover {
-            background-color: #e8f4fd;
-            border-color: #3498db;
-        }
-        
-        .option.selected {
-            background-color: #d6eaf8;
-            border-color: #3498db;
-        }
-        
-        .option input {
-            margin-right: 10px;
-        }
-        
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        
-        .submit-btn:hover {
-            background-color: #2980b9;
-        }
-        
-        .score-container {
-            margin-top: 30px;
-            padding: 20px;
-            text-align: center;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            display: none;
-        }
-        
-        .score-display {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-    </style>
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>General Knowledge Quiz</h1>
-        
-        <div id="questions">
-            <!-- Questions will be added by JavaScript -->
+
+    <h1>Simple Quiz</h1>
+
+    <div id="questions">
+        <div data-index="0">
+            <p>1. What is the capital of India?</p>
+            <label><input type="radio" name="q0" value="Delhi"> Delhi</label>
+            <label><input type="radio" name="q0" value="Mumbai"> Mumbai</label>
+            <label><input type="radio" name="q0" value="Kolkata"> Kolkata</label>
+            <label><input type="radio" name="q0" value="Chennai"> Chennai</label>
         </div>
-        
-        <button id="submit" class="submit-btn">Submit Quiz</button>
-        
-        <div id="score" class="score-container">
-            <!-- Score will be displayed here -->
+
+        <div data-index="1">
+            <p>2. 2 + 2 = ?</p>
+            <label><input type="radio" name="q1" value="3"> 3</label>
+            <label><input type="radio" name="q1" value="4"> 4</label>
+            <label><input type="radio" name="q1" value="5"> 5</label>
+            <label><input type="radio" name="q1" value="6"> 6</label>
+        </div>
+
+        <div data-index="2">
+            <p>3. Which language runs in the browser?</p>
+            <label><input type="radio" name="q2" value="Java"> Java</label>
+            <label><input type="radio" name="q2" value="Python"> Python</label>
+            <label><input type="radio" name="q2" value="JavaScript"> JavaScript</label>
+            <label><input type="radio" name="q2" value="C++"> C++</label>
+        </div>
+
+        <div data-index="3">
+            <p>4. HTML stands for?</p>
+            <label><input type="radio" name="q3" value="Hyper Trainer Marking Language"> Hyper Trainer Marking Language</label>
+            <label><input type="radio" name="q3" value="Hyper Text Markup Language"> Hyper Text Markup Language</label>
+            <label><input type="radio" name="q3" value="Hyper Text Markdown Language"> Hyper Text Markdown Language</label>
+            <label><input type="radio" name="q3" value="None"> None</label>
+        </div>
+
+        <div data-index="4">
+            <p>5. CSS is used for?</p>
+            <label><input type="radio" name="q4" value="Styling"> Styling</label>
+            <label><input type="radio" name="q4" value="Logic"> Logic</label>
+            <label><input type="radio" name="q4" value="Database"> Database</label>
+            <label><input type="radio" name="q4" value="Networking"> Networking</label>
         </div>
     </div>
 
-    <script>
-        // Quiz questions and answers - matching the expected test structure
-        const quizData = [
-            {
-                question: "What is the capital of France?",
-                choices: ["London", "Berlin", "Paris", "Madrid"],
-                correct: 2
-            },
-            {
-                question: "Which planet is known as the Red Planet?",
-                choices: ["Venus", "Mars", "Jupiter", "Saturn"],
-                correct: 1
-            },
-            {
-                question: "What is the largest mammal in the world?",
-                choices: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
-                correct: 1
-            },
-            {
-                question: "Who painted the Mona Lisa?",
-                choices: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
-                correct: 2
-            },
-            {
-                question: "What is the chemical symbol for gold?",
-                choices: ["Go", "Gd", "Au", "Ag"],
-                correct: 2
-            }
-        ];
+    <button id="submit">Submit</button>
 
-        // DOM elements
-        const questionsContainer = document.getElementById('questions');
-        const submitButton = document.getElementById('submit');
-        const scoreContainer = document.getElementById('score');
+    <div id="score"></div>
 
-        // Initialize the quiz
-        function initQuiz() {
-            // Create questions and options
-            quizData.forEach((questionData, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.className = 'question-container';
-                questionElement.innerHTML = `
-                    <div class="question-title">${index + 1}. ${questionData.question}</div>
-                    <div class="options-container">
-                        ${questionData.choices.map((choice, choiceIndex) => `
-                            <label class="option" for="q${index}-option${choiceIndex}">
-                                <input type="radio" id="q${index}-option${choiceIndex}" name="q${index}" value="${choiceIndex}">
-                                ${choice}
-                            </label>
-                        `).join('')}
-                    </div>
-                `;
-                questionsContainer.appendChild(questionElement);
-            });
-
-            // Load saved progress from session storage
-            loadProgress();
-
-            // Load saved score from local storage
-            loadScore();
-
-            // Add event listeners
-            submitButton.addEventListener('click', submitQuiz);
-
-            // Add change listeners to radio buttons to save progress
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', saveProgress);
-            });
-        }
-
-        // Save progress to session storage
-        function saveProgress() {
-            const progress = {};
-            quizData.forEach((_, index) => {
-                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selectedOption) {
-                    progress[index] = parseInt(selectedOption.value);
-                }
-            });
-            sessionStorage.setItem('progress', JSON.stringify(progress));
-        }
-
-        // Load progress from session storage
-        function loadProgress() {
-            const savedProgress = sessionStorage.getItem('progress');
-            if (savedProgress) {
-                const progress = JSON.parse(savedProgress);
-                Object.keys(progress).forEach(questionIndex => {
-                    const optionIndex = progress[questionIndex];
-                    const radioButton = document.querySelector(`input[name="q${questionIndex}"][value="${optionIndex}"]`);
-                    if (radioButton) {
-                        radioButton.checked = true;
-                        radioButton.parentElement.classList.add('selected');
-                    }
-                });
-            }
-        }
-
-        // Submit the quiz and calculate score
-        function submitQuiz() {
-            let score = 0;
-            const userAnswers = {};
-
-            quizData.forEach((questionData, index) => {
-                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selectedOption) {
-                    const answer = parseInt(selectedOption.value);
-                    userAnswers[index] = answer;
-                    if (answer === questionData.correct) {
-                        score++;
-                    }
-                }
-            });
-
-            // Display score
-            scoreContainer.innerHTML = `
-                <div class="score-display">Your score is ${score} out of ${quizData.length}.</div>
-            `;
-            scoreContainer.style.display = 'block';
-
-            // Save score to local storage
-            localStorage.setItem('score', score.toString());
-
-            // Scroll to score display
-            scoreContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Load score from local storage
-        function loadScore() {
-            const savedScore = localStorage.getItem('score');
-            if (savedScore !== null) {
-                // You could display the previous score here if needed
-                console.log(`Previous score: ${savedScore}`);
-            }
-        }
-
-        // Add visual feedback for selected options
-        document.addEventListener('click', function(e) {
-            if (e.target.type === 'radio') {
-                // Remove selected class from all options in the same question
-                const questionName = e.target.name;
-                document.querySelectorAll(`input[name="${questionName}"]`).forEach(radio => {
-                    radio.parentElement.classList.remove('selected');
-                });
-                
-                // Add selected class to the clicked option
-                e.target.parentElement.classList.add('selected');
-            }
-        });
-
-        // Initialize the quiz when the page loads
-        document.addEventListener('DOMContentLoaded', initQuiz);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
